@@ -24,34 +24,35 @@ def userPlayBook(frontend):
     }' %(username)
     cmd = "curl --max-time 5 -d \'{}\'\
     -H 'Content-Type: application/json' \
-    -X POST {}/apis/v1/user/ | jq '.payload.user_id'".format(data, FRONTEND)
+    -X POST {}/apis/v1/user | jq '.payload.user_id'".format(data, FRONTEND)
     user_id = os.popen(cmd).read()
+    print("sooeon {}".format(user_id))
 
 
     if not username:
         print("Error: username doesn't exist")
         return
     
-    gernerateLoad(FRONTEND + "/apis/v1/ratings/{}".format(user_id))
-    
-    
-    print("\ndelete user")
-    
-    delete_cmd = "curl --max-time 5 \
-    -H 'Content-Type: application/json' \
-    -X DELETE {}/apis/v1/user/{}".format(frontend, user_id)
-    os.system(delete_cmd)
-    sleep(0.5)
-
-
-print("load generator starts")
-while 1:
     print("load generate!")
     gernerateLoad(FRONTEND + "/apis/v1/user/2")
     gernerateLoad(FRONTEND + "/apis/v1/product/1")
     gernerateLoad(FRONTEND + "/apis/v1/carts/users/1")
     gernerateLoad(FRONTEND + "/apis/v1/order/1")
     gernerateLoad(FRONTEND + "/apis/v1/order/sale/1")
+    gernerateLoad(FRONTEND + "/apis/v1/ratings{}".format(user_id))
+    
+    print("\ndelete user")
+    
+    delete_cmd = "curl --max-time 5 \
+    -H 'Content-Type: application/json' \
+    -X DELETE {}/apis/v1/user/{}".format(frontend,user_id)
+    print(user_id)
+    os.system(delete_cmd)
+    sleep(0.5)
+
+
+print("load generator starts")
+while 1:
     userPlayBook(FRONTEND)
     print("\n")
 

@@ -18,8 +18,8 @@ router.get("/ratings/:userId", async (req, res) => {
         return;
     }
 
-    rating.temperature = (rating.temperature * 9) / 5 + 32;
-    rating.celcius = false;
+    // rating.temperature = (rating.temperature * 9) / 5 + 32;
+    // rating.celcius = false;
 
     res.send({ payload: rating, message: "get ratings success" });
 });
