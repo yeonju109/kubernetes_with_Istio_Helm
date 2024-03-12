@@ -13,7 +13,7 @@ export const options = {
 }
 
 export default function () {
-  const url = 'http://10.107.249.222/product/1';
+  const url = 'http://10.103.202.249/apis/v1/product/1';
   const response = http.get(url);
   check(response, {
     'status was 200': (r) => r.status == 200,
