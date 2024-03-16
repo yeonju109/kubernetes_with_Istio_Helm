@@ -1,92 +1,91 @@
 pipeline {
     agent any
     environment{
-    DOCKER_ID = 'tmdwn0704'
-    FRONT_IMAGE = 'frontend'
-    USER_IMAGE = 'user-service'
-    PRODUCT_IMAGE = 'product-service'
-    ORDER_IMAGE = 'order-service'    
-    GATEWAY_IMAGE = 'gateway-service'
-    CART_IMAGE = 'cart-service'
-    RATING_IMAGE = 'rating-service'
-    TAG = 'test'
-    VERSION = 'test${BUILD_NUMBER}'
+        REGION = 'ap-northeast-2'
+        EKS_API = 'https://18327F82AA6C69187CA65A601EAE3DA4.gr7.ap-northeast-2.eks.amazonaws.com'
+        EKS_CLUSTER_NAME = '4team-PRD-eks-cluster'
+        ECR_PATH = '381491981365.dkr.ecr.ap-northeast-2.amazonaws.com'
+        AWS_CREDENTIAL_ID = 'aws-credential'
+        FRONT_IMAGE = 'frontend'
+        USER_IMAGE = 'user-service'
+        PRODUCT_IMAGE = 'product-service'
+        ORDER_IMAGE = 'order-service'    
+        GATEWAY_IMAGE = 'gateway-service'
+        CART_IMAGE = 'cart-service'
+        RATING_IMAGE = 'rating-service'
+        TAG = 'project'
+        githubCredential = 'github-ssh'
+        GIT_USERNAME = 'sooeonzzang'
+        GIT_PASSWORD = 'sooeoun2352^^'
     }
-    
     stages{
-
         stage("clone"){
             steps{
-                git([url: 'https://github.com/sjoh0704/react-django-shop.git', branch: 'dev', credentialsId: 'github-credential'])
+                git([url: 'https://github.com/sooeonzzang/kubernetes-with-Istio.git', branch: 'master', credentialsId: githubCredential])
             }
         }
-
-        stage("image build"){
+        stage("image build and push"){
             steps{
-                
-                    
-                dir('product'){
-                    sh 'docker build -t ${DOCKER_ID}/${PRODUCT_IMAGE}:${TAG}${BUILD_NUMBER} .'
-                }
-
-                dir('front-shop'){
-                sh 'docker build -t ${DOCKER_ID}/${FRONT_IMAGE}:${TAG}${BUILD_NUMBER} .'
-                }   
-
-                dir('account'){         
-                sh 'docker build -t ${DOCKER_ID}/${USER_IMAGE}:${TAG}${BUILD_NUMBER} .'
-                }      
-
-                dir('order'){
-                sh 'docker build -t ${DOCKER_ID}/${ORDER_IMAGE}:${TAG}${BUILD_NUMBER} .'
-                }    
-
-                dir('apigateway2'){
-                sh 'docker build -t ${DOCKER_ID}/${GATEWAY_IMAGE}:${TAG}${BUILD_NUMBER} .'
-                }
-
-                dir('cart'){
-                sh 'docker build -t ${DOCKER_ID}/${CART_IMAGE}:${TAG}${BUILD_NUMBER} .'
-                }
-                
-                dir('rating'){
-                sh 'docker build -t ${DOCKER_ID}/${RATING_IMAGE}:${TAG}${BUILD_NUMBER} .'
+                script{
+                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                    def product_image = docker.build("${ECR_PATH}/${PRODUCT_IMAGE}")
+                    product_image.push("v${env.BUILD_NUMBER}")
+                    }
+                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                    def front_image = docker.build("${ECR_PATH}/${FRONT_IMAGE}")
+                    front_image.push("v${env.BUILD_NUMBER}")
+                    }
+                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                    def user_image = docker.build("${ECR_PATH}/${USER_IMAGE}")
+                    user_image.push("v${env.BUILD_NUMBER}")
+                    }
+                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                    def order_image = docker.build("${ECR_PATH}/${ORDER_IMAGE}")
+                    order_image.push("v${env.BUILD_NUMBER}")
+                    }
+                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                    def cart_image = docker.build("${ECR_PATH}/${CART_IMAGE}")
+                    cart_image.push("v${env.BUILD_NUMBER}")
+                    }
+                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                    def rating_image = docker.build("${ECR_PATH}/${RATING_IMAGE}")
+                    rating_image.push("v${env.BUILD_NUMBER}")
+                    }
                 }
             }
         }
-    
-    stage("push images"){
-
-        steps{
-            withCredentials([usernamePassword(credentialsId: 'dockerhub-credential', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-              sh 'docker login -u $USERNAME -p $PASSWORD'
+        stage('CleanUp Images'){
+            steps{
+                sh"""
+                docker rmi ${ECR_PATH}/${PRODUCT_IMAGE}:v$BUILD_NUMBER
+                docker rmi ${ECR_PATH}/${PRODUCT_IMAGE}:latest
+                docker rmi ${ECR_PATH}/${FRONT_IMAGE}:v$BUILD_NUMBER
+                docker rmi ${ECR_PATH}/${FRONT_IMAGE}:latest
+                docker rmi ${ECR_PATH}/${USER_IMAGE}:v$BUILD_NUMBER
+                docker rmi ${ECR_PATH}/${USER_IMAGE}:latest
+                docker rmi ${ECR_PATH}/${ORDER_IMAGE}:v$BUILD_NUMBER
+                docker rmi ${ECR_PATH}/${ORDER_IMAGE}:latest
+                docker rmi ${ECR_PATH}/${CART_IMAGE}:v$BUILD_NUMBER
+                docker rmi ${ECR_PATH}/${CART_IMAGE}:latest
+                docker rmi ${ECR_PATH}/${RATING_IMAGE}:v$BUILD_NUMBER
+                docker rmi ${ECR_PATH}/${RATING_IMAGE}:latest
+                """
             }
-            sh 'docker push ${DOCKER_ID}/${FRONT_IMAGE}:${TAG}${BUILD_NUMBER}'
-            sh 'docker push ${DOCKER_ID}/${USER_IMAGE}:${TAG}${BUILD_NUMBER}'
-            sh 'docker push ${DOCKER_ID}/${PRODUCT_IMAGE}:${TAG}${BUILD_NUMBER}'
-            sh 'docker push ${DOCKER_ID}/${GATEWAY_IMAGE}:${TAG}${BUILD_NUMBER}'
-            sh 'docker push ${DOCKER_ID}/${ORDER_IMAGE}:${TAG}${BUILD_NUMBER}'
-            sh 'docker push ${DOCKER_ID}/${CART_IMAGE}:${TAG}${BUILD_NUMBER}'
-            sh 'docker push ${DOCKER_ID}/${RATING_IMAGE}:${TAG}${BUILD_NUMBER}'
-
         }
-    }
-        
         stage("update manifest"){
-
             steps{
-            git([url: 'https://github.com/sjoh0704/MSA-Shop-Helm-Chart.git', branch: 'master', credentialsId: 'github-credential'])
-            dir('version'){
+            git([url: 'https://github.com/sooeonzzang/kubernetes_with_Istio_Helm.git', branch: 'master', credentialsId: githubCredential])
+            dir('TEST/version'){
            
             echo "update yamls"
-            sh "sed 's/${TAG}/${TAG}${BUILD_NUMBER}/' values_demo.yaml > values_ver${BUILD_NUMBER}.yaml" 
+            sh "sed 's/${TAG}/${TAG}${BUILD_NUMBER}/' ../values.yaml > values_v${BUILD_NUMBER}.yaml" 
             sh 'git add . '
             sh 'git commit -m "commit manifest${BUILD_NUMBER}"'
-            withCredentials([usernamePassword(credentialsId: 'github-credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                        sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/sjoh0704/MSA-Shop-Helm-Chart.git master')
-                    
+            sh "cp values_v${BUILD_NUMBER}.yaml ../values.yaml"
+            withCredentials([usernamePassword(credentialsId: githubCredential, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                        sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/sooeonzzang/kubernetes_with_Istio_Helm.git master')
                     }    
-                }
+            }
             }         
         }
     }
