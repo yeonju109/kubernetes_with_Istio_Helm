@@ -2,8 +2,6 @@ pipeline {
     agent any
     environment{
         REGION = 'ap-northeast-2'
-        EKS_API = 'https://18327F82AA6C69187CA65A601EAE3DA4.gr7.ap-northeast-2.eks.amazonaws.com'
-        EKS_CLUSTER_NAME = '4team-PRD-eks-cluster'
         ECR_PATH = '381491981365.dkr.ecr.ap-northeast-2.amazonaws.com'
         AWS_CREDENTIAL_ID = 'aws-credential'
         FRONT_IMAGE = 'frontend'
@@ -14,7 +12,7 @@ pipeline {
         CART_IMAGE = 'cart-service'
         RATING_IMAGE = 'rating-service'
         TAG = 'project'
-        githubCredential = 'github-ssh'
+        githubCredential = 'github'
         GIT_USERNAME = 'sooeonzzang'
         GIT_PASSWORD = 'sooeoun2352^^'
     }
