@@ -48,7 +48,7 @@ const Banner = () => {
                                 }}
                             >
                                 <h2 style={{ color: "black" }}>
-                                    My Shopping Mall
+                                    포도 마켓
                                 </h2>
                             </Link>
                         </Col>

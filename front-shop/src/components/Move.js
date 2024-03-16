@@ -3,26 +3,27 @@ import { Link } from "react-router-dom";
 import { Container } from "react-bootstrap";
 const Move = () => {
     return (
-        <div>
-            <br />
-            <br />
-            <br />
-            <br />
+        <div
+            style={{
+                background: "#a97bf5"
+            }}
+        >
             <hr />
             <br />
             <Container>
                 <br />
                 <ul>
                     <li>
-                        <a href="https://github.com/sjoh0704">
+                        <a href="https://github.com/sjoh0704" style={{ color: 'white', fontWeight: 'bold' }}>
                             https://github.com/sjoh0704
                         </a>
                     </li>
                     <li>
-                        <a href="https://seungjuitmemo.tistory.com/">
+                        <a href="https://seungjuitmemo.tistory.com/" style={{ color: 'white', fontWeight: 'bold' }}>
                             https://seungjuitmemo.tistory.com/
                         </a>
                     </li>
+                    <br />
                     <br />
 
                     {/* <li><Link to="http://naver.com" style={{textDecoration:'none', color:'inherit'}}>Home</Link></li>

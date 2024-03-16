@@ -5,6 +5,9 @@ import axios from "axios";
 import Carousel from "react-bootstrap/Carousel";
 import { Container, Navbar, Spinner } from "react-bootstrap";
 import Loading from "./Loading";
+import img1 from './1.jpg';
+import img2 from './2.jpg';
+import img3 from './3.jpg';
 
 export default function Home(props) {
     const [products, Setproducts] = useState([]);
@@ -64,11 +67,11 @@ function ControlledCarousel() {
         setIndex(selectedIndex);
     };
     return (
-        <Carousel activeIndex={index} onSelect={handleSelect}>
+        <Carousel activeIndex={index} onSelect={handleSelect} fade>
             <Carousel.Item>
                 <img
                     className="d-block w-100"
-                    src="https://img.lovepik.com//back_pic/05/72/43/975bbd3c7e54c21.jpg_wh860.jpg"
+                    src={img1}
                     alt="First slide"
                     style={{
                         minWidth: "100%",
@@ -83,7 +86,7 @@ function ControlledCarousel() {
             <Carousel.Item>
                 <img
                     className="d-block w-100"
-                    src="https://image.freepik.com/free-vector/the-interior-of-mall-banner-scene-inside-a-shopping-store-at-night_93732-21.jpg"
+                    src={img2}
                     alt="Second slide"
                     style={{
                         minWidth: "100%",
@@ -99,7 +102,7 @@ function ControlledCarousel() {
             <Carousel.Item>
                 <img
                     className="d-block w-100"
-                    src="https://i.pinimg.com/originals/b9/42/dd/b942dd80ac8cba56dd90dc539d2040c0.jpg"
+                    src={img3}
                     alt="Third slide"
                     style={{
                         minWidth: "100%",

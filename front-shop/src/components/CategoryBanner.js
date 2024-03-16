@@ -25,7 +25,7 @@ export function CategoryDirection({ tag1, tag2, tag3, tag4, tag5 }) {
                     {expression}
                 </Link>
             </span>
-            <span style={{ fontWeight: "bolder", color: "#e85255" }}>
+            <span style={{ fontWeight: "bolder", color: "#a97bf5" }}>
                 {last}
             </span>
         </div>
@@ -59,7 +59,7 @@ function CategoryBanner() {
     return (
         <div
             style={{
-                background: "#e85255",
+                background: "#a97bf5",
                 fontSize: "1.3rem",
                 paddingTop: 5,
                 paddingBottom: 5,
