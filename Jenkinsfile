@@ -12,8 +12,9 @@ pipeline {
         RATING_IMAGE = 'rating-service'
         TAG = 'project'
         GITHUB_CREDENTIAL = 'github'
-        GIT_EMAIL = 'sooeonzzang'
-        GIT_USERNAME = 'sooeoun2352^^'
+        GIT_EMAIL = 'miantndjs@naver.com'
+        GIT_USERNAME = 'sooeonzzang'
+        GIT_PASSWORD = 'sooeoun2352^^'
     }
     stages{
         // stage("clone"){
