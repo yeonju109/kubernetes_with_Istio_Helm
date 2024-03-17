@@ -101,7 +101,7 @@ pipeline {
             sh 'rm ../values.yaml'
             sh "cp values_v${BUILD_NUMBER}.yaml ../values.yaml"
             withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIAL, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/sooeonzzang/kubernetes_with_Istio_Helm.git master')
+                    sh('git push https://${GIT_USERNAME}:${GITHUB_CREDENTIAL}@github.com/sooeonzzang/kubernetes_with_Istio_Helm.git master')
                 
                 }    
             }
