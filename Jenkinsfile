@@ -17,14 +17,14 @@ pipeline {
         
     }
     stages{
-        // stage("clone"){
-        //     steps{
-        //         git([url: 'https://github.com/sooeonzzang/kubernetes-with-Istio.git', branch: 'master', credentialsId: 'github'])
-        //     }
-        // }
-        // stage("image build and push"){
-        //     steps{
-        //         script{
+        stage("clone"){
+            steps{
+                git([url: 'https://github.com/sooeonzzang/kubernetes-with-Istio.git', branch: 'master', credentialsId: 'github'])
+            }
+        }
+        stage("image build and push"){
+            steps{
+                script{
         //             dir('product'){
         //                 docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
         //                 def product_image = docker.build("${ECR_PATH}/${PRODUCT_IMAGE}")
@@ -32,12 +32,12 @@ pipeline {
         //                 }
         //             }
 
-        //             dir('front-shop'){
-        //                 docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
-        //                 def front_image = docker.build("${ECR_PATH}/${FRONT_IMAGE}")
-        //                 front_image.push("v${env.BUILD_NUMBER}")
-        //                 }
-        //             }
+                    dir('front-shop'){
+                        docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                        def front_image = docker.build("${ECR_PATH}/${FRONT_IMAGE}")
+                        front_image.push("v${env.BUILD_NUMBER}")
+                        }
+                    }
 
         //             dir('account'){
         //                 docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
@@ -66,11 +66,15 @@ pipeline {
         //                 rating_image.push("v${env.BUILD_NUMBER}")
         //                 }
         //             }
-        //         }
-        //     }
-        // }
-        // stage('CleanUp Images'){
-        //     steps{
+                }
+            }
+        }
+         stage('CleanUp Images'){
+             steps{
+                   sh""" 
+                   docker rmi ${ECR_PATH}/${FRONT_IMAGE}:v$BUILD_NUMBER
+                   docker rmi ${ECR_PATH}/${FRONT_IMAGE}:latest
+                   """
         //         sh"""
         //         docker rmi ${ECR_PATH}/${PRODUCT_IMAGE}:v$BUILD_NUMBER
         //         docker rmi ${ECR_PATH}/${PRODUCT_IMAGE}:latest
@@ -85,8 +89,8 @@ pipeline {
         //         docker rmi ${ECR_PATH}/${RATING_IMAGE}:v$BUILD_NUMBER
         //         docker rmi ${ECR_PATH}/${RATING_IMAGE}:latest
         //         """
-        //     }
-        // }
+             }
+         }
         stage("update manifest"){
             steps{
             git credentialsId: 'github-ssh',
@@ -94,14 +98,14 @@ pipeline {
                 branch: 'master'
             sh "git config --global user.email ${GIT_EMAIL}"
             sh "git config --global user.name ${GIT_USERNAME}"
-            dir('TEST/version'){
+            dir('PRD/version'){
            
             echo "update yamls"
-            sh "sed 's/${TAG}/${TAG}${BUILD_NUMBER}/' ../values.yaml > values_v${BUILD_NUMBER}.yaml" 
+            sh "sed 's/${TAG}/${TAG}4/' value_init.yaml > value_v4.yaml" 
             sh 'git add . '
             sh 'git commit -m "commit manifest${BUILD_NUMBER}"'
             sh 'rm ../values.yaml'
-            sh "cp values_v${BUILD_NUMBER}.yaml ../values.yaml"
+            sh "cp values_v4.yaml ../values.yaml"
             sh 'git push origin master'
             }
             }         
