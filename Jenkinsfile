@@ -11,7 +11,7 @@ pipeline {
         CART_IMAGE = 'cart-service'
         RATING_IMAGE = 'rating-service'
         TAG = 'project'
-        GITHUB_CREDENTIAL = 'github'
+        GITHUB_CREDENTIAL = 'github-ssh'
         GIT_EMAIL = 'miantndjs@naver.com'
         GIT_USERNAME = 'sooeonzzang'
         
@@ -19,7 +19,7 @@ pipeline {
     stages{
         // stage("clone"){
         //     steps{
-        //         git([url: 'https://github.com/sooeonzzang/kubernetes-with-Istio.git', branch: 'master', credentialsId: GITHUB_CREDENTIAL])
+        //         git([url: 'https://github.com/sooeonzzang/kubernetes-with-Istio.git', branch: 'master', credentialsId: 'github'])
         //     }
         // }
         // stage("image build and push"){
@@ -89,7 +89,9 @@ pipeline {
         // }
         stage("update manifest"){
             steps{
-            git([url: 'https://github.com/sooeonzzang/kubernetes_with_Istio_Helm.git', branch: 'master', credentialsId: GITHUB_CREDENTIAL])
+            git credentialsId: 'github-ssh',
+                url: 'git@github.com:sooeonzzang/kubernetes_with_Istio_Helm.git',
+                branch: 'mater'
             sh "git config --global user.email ${GIT_EMAIL}"
             sh "git config --global user.name ${GIT_USERNAME}"
             dir('TEST/version'){
@@ -100,7 +102,7 @@ pipeline {
             sh 'git commit -m "commit manifest${BUILD_NUMBER}"'
             sh 'rm ../values.yaml'
             sh "cp values_v${BUILD_NUMBER}.yaml ../values.yaml"
-            sh "git push https://github.com/sooeonzzang/kubernetes_with_Istio_Helm.git master"
+            sh 'git push origin master'
             }
             }         
         }
