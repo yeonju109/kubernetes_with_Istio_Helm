@@ -25,29 +25,46 @@ pipeline {
         stage("image build and push"){
             steps{
                 script{
-                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
-                    def product_image = docker.build("${ECR_PATH}/${PRODUCT_IMAGE}")
-                    product_image.push("v${env.BUILD_NUMBER}")
+                    dir('product'){
+                        docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                        def product_image = docker.build("${ECR_PATH}/${PRODUCT_IMAGE}")
+                        product_image.push("v${env.BUILD_NUMBER}")
+                        }
                     }
-                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
-                    def front_image = docker.build("${ECR_PATH}/${FRONT_IMAGE}")
-                    front_image.push("v${env.BUILD_NUMBER}")
+
+                    dir('front-shop'){
+                        docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                        def front_image = docker.build("${ECR_PATH}/${FRONT_IMAGE}")
+                        front_image.push("v${env.BUILD_NUMBER}")
+                        }
                     }
-                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
-                    def user_image = docker.build("${ECR_PATH}/${USER_IMAGE}")
-                    user_image.push("v${env.BUILD_NUMBER}")
+
+                    dir('account'){
+                        docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                        def user_image = docker.build("${ECR_PATH}/${USER_IMAGE}")
+                        user_image.push("v${env.BUILD_NUMBER}")
+                        }
                     }
-                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
-                    def order_image = docker.build("${ECR_PATH}/${ORDER_IMAGE}")
-                    order_image.push("v${env.BUILD_NUMBER}")
+
+                    dir('order'){
+                        docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                        def order_image = docker.build("${ECR_PATH}/${ORDER_IMAGE}")
+                        order_image.push("v${env.BUILD_NUMBER}")
+                        }
                     }
-                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
-                    def cart_image = docker.build("${ECR_PATH}/${CART_IMAGE}")
-                    cart_image.push("v${env.BUILD_NUMBER}")
+
+                    dir('cart'){
+                        docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                        def cart_image = docker.build("${ECR_PATH}/${CART_IMAGE}")
+                        cart_image.push("v${env.BUILD_NUMBER}")
+                        }
                     }
-                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
-                    def rating_image = docker.build("${ECR_PATH}/${RATING_IMAGE}")
-                    rating_image.push("v${env.BUILD_NUMBER}")
+
+                    dir('rating'){
+                        docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                        def rating_image = docker.build("${ECR_PATH}/${RATING_IMAGE}")
+                        rating_image.push("v${env.BUILD_NUMBER}")
+                        }
                     }
                 }
             }
