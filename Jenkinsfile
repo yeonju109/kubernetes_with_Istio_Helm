@@ -91,7 +91,7 @@ pipeline {
             steps{
             git credentialsId: 'github-ssh',
                 url: 'git@github.com:sooeonzzang/kubernetes_with_Istio_Helm.git',
-                branch: 'mater'
+                branch: 'master'
             sh "git config --global user.email ${GIT_EMAIL}"
             sh "git config --global user.name ${GIT_USERNAME}"
             dir('TEST/version'){
