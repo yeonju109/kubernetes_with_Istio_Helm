@@ -13,7 +13,7 @@ pipeline {
         TAG = 'project'
         GITHUB_CREDENTIAL = 'github'
         GIT_EMAIL = 'miantndjs@naver.com'
-        GIT_USERNAME1 = 'sooeonzzang'
+        GIT_USERNAME = 'sooeonzzang'
         
     }
     stages{
@@ -91,7 +91,7 @@ pipeline {
             steps{
             git([url: 'https://github.com/sooeonzzang/kubernetes_with_Istio_Helm.git', branch: 'master', credentialsId: GITHUB_CREDENTIAL])
             sh "git config --global user.email ${GIT_EMAIL}"
-            sh "git config --global user.name ${GIT_USERNAME1}"
+            sh "git config --global user.name ${GIT_USERNAME}"
             dir('TEST/version'){
            
             echo "update yamls"
@@ -100,10 +100,7 @@ pipeline {
             sh 'git commit -m "commit manifest${BUILD_NUMBER}"'
             sh 'rm ../values.yaml'
             sh "cp values_v${BUILD_NUMBER}.yaml ../values.yaml"
-            withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIAL, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    sh('git push https://${GIT_USERNAME}:${GITHUB_CREDENTIAL}@github.com/sooeonzzang/kubernetes_with_Istio_Helm.git master')
-                
-                }    
+            sh "git push https://${GIT_EMAIL}:${GITHUB_CREDENTIAL}@github.com/sooeonzzang/kubernetes_with_Istio_Helm.git master"
             }
             }         
         }
