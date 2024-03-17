@@ -100,9 +100,7 @@ pipeline {
             sh 'git commit -m "commit manifest${BUILD_NUMBER}"'
             sh 'rm ../values.yaml'
             sh "cp values_v${BUILD_NUMBER}.yaml ../values.yaml"
-            withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIAL, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                        sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/sooeonzzang/kubernetes_with_Istio_Helm.git master')
-                    }    
+            sh 'git push origin master'    
             }
             }         
         }
