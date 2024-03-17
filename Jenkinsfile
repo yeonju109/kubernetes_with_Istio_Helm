@@ -100,7 +100,7 @@ pipeline {
             sh 'git commit -m "commit manifest${BUILD_NUMBER}"'
             sh 'rm ../values.yaml'
             sh "cp values_v${BUILD_NUMBER}.yaml ../values.yaml"
-            sh "git push https://${GIT_USERNAME}:${GITHUB_CREDENTIAL}@github.com/sooeonzzang/kubernetes_with_Istio_Helm.git master"
+            sh "git push https://github.com/sooeonzzang/kubernetes_with_Istio_Helm.git master"
             }
             }         
         }
