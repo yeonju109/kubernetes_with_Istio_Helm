@@ -14,13 +14,13 @@ const Move = () => {
                 <br />
                 <ul>
                     <li>
-                        <a href="https://github.com/sjoh0704" style={{ color: 'white', fontWeight: 'bold' }}>
-                            https://github.com/sjoh0704
+                        <a href="https://www.notion.so/MSA-Shop-with-Istio-k8s-gateway-31cf9b0d75bd47a7ad6d1fcec4dc75cd?pvs=4" style={{ color: 'white', fontWeight: 'bold' }}>
+                            https://www.notion.so/MSA-Shop-with-Istio-k8s-gateway-31cf9b0d75bd47a7ad6d1fcec4dc75cd?pvs=4
                         </a>
                     </li>
                     <li>
                         <a href="https://seungjuitmemo.tistory.com/" style={{ color: 'white', fontWeight: 'bold' }}>
-                            https://seungjuitmemo.tistory.com/
+                            https://github.com/sooeonzzang
                         </a>
                     </li>
                     <br />
