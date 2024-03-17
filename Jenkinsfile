@@ -12,8 +12,8 @@ pipeline {
         RATING_IMAGE = 'rating-service'
         TAG = 'project'
         GITHUB_CREDENTIAL = 'github'
-        GIT_USERNAME = 'sooeonzzang'
-        GIT_PASSWORD = 'sooeoun2352^^'
+        GIT_EMAIL = 'sooeonzzang'
+        GIT_USERNAME = 'sooeoun2352^^'
     }
     stages{
         // stage("clone"){
@@ -89,6 +89,8 @@ pipeline {
         stage("update manifest"){
             steps{
             git([url: 'https://github.com/sooeonzzang/kubernetes_with_Istio_Helm.git', branch: 'master', credentialsId: GITHUB_CREDENTIAL])
+            sh "git config --global user.email ${GIT_EMAIL}"
+            sh "git config --global user.name ${GIT_USERNAME}"
             dir('TEST/version'){
            
             echo "update yamls"
