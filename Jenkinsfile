@@ -102,10 +102,10 @@ pipeline {
            
             echo "update yamls"
             sh "sed 's/${TAG}/${TAG}4/' value_init.yaml > value_v4.yaml" 
-            sh 'git add . '
-            sh 'git commit -m "commit manifest${BUILD_NUMBER}"'
             sh 'rm ../values.yaml'
-            sh "cp values_v4.yaml ../values.yaml"
+            sh "cp value_v4.yaml ../values.yaml"
+	    sh 'git add . '
+            sh 'git commit -m "commit manifest${BUILD_NUMBER}"'
             sh 'git push origin master'
             }
             }         
