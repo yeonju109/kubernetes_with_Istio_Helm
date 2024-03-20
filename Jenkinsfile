@@ -25,19 +25,19 @@ pipeline {
         stage("image build and push"){
             steps{
                 script{
-        //             dir('product'){
-        //                 docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
-        //                 def product_image = docker.build("${ECR_PATH}/${PRODUCT_IMAGE}")
-        //                 product_image.push("v${env.BUILD_NUMBER}")
-        //                 }
-        //             }
+                     dir('product'){
+                         docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+                         def product_image = docker.build("${ECR_PATH}/${PRODUCT_IMAGE}")
+                         product_image.push("v${env.BUILD_NUMBER}")
+                         }
+                     }
 
-                    dir('front-shop'){
-                        docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
-                        def front_image = docker.build("${ECR_PATH}/${FRONT_IMAGE}")
-                        front_image.push("v${env.BUILD_NUMBER}")
-                        }
-                    }
+        //            dir('front-shop'){
+        //                docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
+          //              def front_image = docker.build("${ECR_PATH}/${FRONT_IMAGE}")
+            //            front_image.push("v${env.BUILD_NUMBER}")
+            //            }
+            //        }
 
         //             dir('account'){
         //                 docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}"){
