@@ -1,0 +1,71 @@
+image:
+  repository: "381491981365.dkr.ecr.ap-northeast-2.amazonaws.com"
+  pullPolicy: Always
+  tag: "project"
+
+app:
+  frontend:
+    replicaCount: 1
+  user:
+    # for user sticky session
+    replicaCount: 2
+  product:
+    replicaCount: 1
+  order:
+    replicaCount: 1
+  apiGateWay:
+    replicaCount: 1
+  cart:
+    replicaCount: 1
+  rating:
+    replicaCount: 1
+
+database:
+  user:
+    replicaCount: 1
+  product:
+    replicaCount: 1
+  order:
+    replicaCount: 1
+  cart:
+    replicaCount: 1
+  rating:
+    replicaCount: 1
+
+hpa:
+  apiGateway:
+    maxReplicas: 3
+    minReplicas: 1
+    targetValue: 300m
+  frontend:
+    maxReplicas: 3
+    minReplicas: 1
+    targetValue: 300m
+  user:
+    maxReplicas: 3
+    minReplicas: 2
+    targetValue: 300m
+  product:
+    maxReplicas: 3
+    minReplicas: 1
+    targetValue: 100m
+  order:
+    maxReplicas: 3
+    minReplicas: 1
+    targetValue: 200m
+  cart:
+    maxReplicas: 3
+    minReplicas: 1
+    targetValue: 300m
+  rating:
+    maxReplicas: 3
+    minReplicas: 1
+    targetValue: 300m
+
+
+monitoring:
+  circuitbreaking:
+    use: false
+
+  canary: 
+    use: false
