@@ -1,5 +1,5 @@
 image:
-  repository: "381491981365.dkr.ecr.ap-northeast-2.amazonaws.com"
+  repository: "maintndjs"
   pullPolicy: Always
   tag: "v1"
 
