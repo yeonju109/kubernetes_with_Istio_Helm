@@ -1,7 +1,7 @@
 image:
   repository: "381491981365.dkr.ecr.ap-northeast-2.amazonaws.com"
   pullPolicy: Always
-  tag: "project27"
+  tag: "project26"
 
 app:
   frontend:
