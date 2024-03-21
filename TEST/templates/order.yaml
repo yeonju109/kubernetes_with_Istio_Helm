@@ -1,0 +1,83 @@
+# order
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order
+spec:
+  selector:
+    matchLabels:
+      app: order
+  replicas: {{ .Values.app.order.replicaCount }}
+  template: 
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+      - name: order-api-container
+        image: {{ .Values.image.repository }}/order-service:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 8000
+        envFrom: 
+        - configMapRef:
+            name: service-url
+        - configMapRef:
+            name: app-db-setting
+        
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 80
+          periodSeconds: 10
+          
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 80
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name:  order-service
+spec:
+  selector:
+    app: order
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8000
+  type: ClusterIP
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: order
+  namespace: default
+spec:
+  maxReplicas: {{ .Values.hpa.order.maxReplicas }}
+  minReplicas: {{ .Values.hpa.order.minReplicas }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: order
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 60 # intentionally using a small value. default: 300
+  metrics:
+    - type: Object
+      object:
+        metric:
+          name: request_duration_seconds_90ile
+        describedObject:
+          apiVersion: apps/v1
+          kind: Deployment
+          name: order
+        target:
+          type: Value
+          value: {{ .Values.hpa.order.targetValue }}

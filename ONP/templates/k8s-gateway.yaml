@@ -1,0 +1,196 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: k8s-gateway
+spec:
+  gatewayClassName: istio
+  listeners:
+  - name: default
+    port: 80
+    protocol: HTTP
+    name: http
+    allowedRoutes:
+      namespaces:
+        from: All
+
+---
+
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: httproute
+  namespace: default
+spec:
+  parentRefs:
+  - name: k8s-gateway
+  rules:
+
+  ## for api gateway ##
+
+  # user-service
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /apis/v1/user
+    backendRefs:
+    - name: user-service
+      port: 8080
+
+  # cart-service
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /apis/v1/carts
+    backendRefs:
+    - name: cart-service
+      port: 8080
+
+  # order-service
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /apis/v1/order
+    backendRefs:
+    - name: order-service
+      port: 8080
+
+  # product-service
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /apis/v1/product
+    backendRefs:
+    - name: product-service
+      port: 8080
+
+  # product-service-category
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /apis/v1/category
+    backendRefs:
+    - name: product-service
+      port: 8080
+
+  # rating-service
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /apis/v1/ratings
+    backendRefs:
+    - name: rating-service
+      port: 8080
+
+  ## for dark release ( header base routing) 
+
+  # order-admin
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /admin/order
+    filters:
+    - type: RequestHeaderModifier
+      requestHeaderModifier:
+        add:
+        - name: sooeon
+          value: zzang
+    backendRefs:
+    - name: order-service
+      port: 8080
+  
+  # product-admin
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /admin/item
+    filters:
+    - type: RequestHeaderModifier
+      requestHeaderModifier:
+        add:
+        - name: sooeon
+          value: zzang
+    backendRefs:
+    - name: product-service
+      port: 8080
+  
+  # user-admin
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /admin/user
+    filters:
+    - type: RequestHeaderModifier
+      requestHeaderModifier:
+        add:
+        - name: sooeon
+          value: zzang
+    backendRefs:
+    - name: user-service
+      port: 8080
+
+  # # kiali
+  # - matches:
+  #   - path:
+  #       type: PathPrefix
+  #       value: /admin/kiali
+  #   filters:
+  #   - type: RequestHeaderModifier
+  #     requestHeaderModifier:
+  #       add:
+  #       - name: sooeon
+  #         value: zzang
+  #   - type: URLRewrite
+  #     urlRewrite:
+  #       hostname: PODO.MSA.SHOP
+  #       path:
+  #         type: ReplacePrefixMatch
+  #         replacePrefixMatch: /
+  #   backendRefs:
+  #   - name: kiali.istio-system.svc.cluster.local
+  #     port: 20001
+
+  # # grafana
+  # - matches:
+  #   - path:
+  #       type: PathPrefix
+  #       value: /admin/grafana
+  #   filters:
+  #   - type: RequestHeaderModifier
+  #     requestHeaderModifier:
+  #       add:
+  #       - name: sooeon
+  #         value: zzang
+  #   - type: URLRewrite
+  #     urlRewrite:
+  #       hostname: PODO.MSA.SHOP
+  #       path:
+  #         type: ReplacePrefixMatch
+  #         replacePrefixMatch: /
+  #   backendRefs:
+  #   - name: grafana.istio-system.svc.cluster.local
+  #     port: 3000
+
+  # # jaeger
+  # - matches:
+  #   - path:
+  #       type: PathPrefix
+  #       value: /admin/grafana
+  #   filters:
+  #   - type: RequestHeaderModifier
+  #     requestHeaderModifier:
+  #       add:
+  #       - name: sooeon
+  #         value: zzang
+  #   - type: URLRewrite
+  #     urlRewrite:
+  #       hostname: PODO.MSA.SHOP
+  #       path:
+  #         type: ReplacePrefixMatch
+  #         replacePrefixMatch: /
+  #   backendRefs:
+  #   - name: tracing.istio-system.svc.cluster.local
+  #     port: 80
+
+
+
+

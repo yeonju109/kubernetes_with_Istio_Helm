@@ -1,0 +1,185 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: k8s-gateway
+  namespace: default
+  annotations:
+    networking.istio.io/service-type: NodePort
+spec:
+  gatewayClassName: istio
+  listeners:
+  - name: default
+    port: 80
+    protocol: HTTP
+    name: http
+    allowedRoutes:
+      namespaces:
+        from: All
+
+---
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: httproute-default
+  namespace: default
+spec:
+  parentRefs:
+  - name: k8s-gateway
+    namespace: default
+  rules:
+
+  ## for api gateway ##
+
+  # user-service
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /apis/v1/user
+    backendRefs:
+    - name: user-service
+      port: 8080
+
+  # cart-service
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /apis/v1/carts
+    backendRefs:
+    - name: cart-service
+      port: 8080
+
+  # order-service
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /apis/v1/order
+    backendRefs:
+    - name: order-service
+      port: 8080
+
+  # product-service
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /apis/v1/product
+    backendRefs:
+    - name: product-service
+      port: 8080
+
+  # product-service-category
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /apis/v1/category
+    backendRefs:
+    - name: product-service
+      port: 8080
+
+  # rating-service
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /apis/v1/ratings
+    backendRefs:
+    - name: rating-service
+      port: 8080
+
+  ## for dark release ( header base routing) 
+
+  # order-admin
+  - matches:
+    - headers:
+      - type: Exact
+        name: sooeon
+        value: zzang
+      path:
+        type: PathPrefix
+        value: /admin/order
+    
+    backendRefs:
+    - name: order-service
+      port: 8080
+  
+  # product-admin
+  - matches:
+    - headers:
+      - type: Exact
+        name: sooeon
+        value: zzang
+      path:
+        type: PathPrefix
+        value: /admin/item
+    
+    backendRefs:
+    - name: product-service
+      port: 8080
+  
+  # user-admin
+  - matches:
+    - headers:
+      - type: Exact
+        name: sooeon
+        value: zzang
+      path:
+        type: PathPrefix
+        value: /admin/user
+      
+    backendRefs:
+    - name: user-service
+      port: 8080
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: httproute-monitoring
+  namespace: istio-system
+spec:
+  parentRefs:
+  - name: k8s-gateway
+    namespace: default
+  rules:
+
+  # for monitoring
+  - matches:
+    - headers:
+      - type: Exact
+        name: sooeon
+        value: zzang
+      path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: grafana
+      port: 3000
+  
+  #kiali
+  - matches:
+    - headers:
+      - type: Exact
+        name: sooeon
+        value: zzang
+      path:
+        type: PathPrefix
+        value: /kiali
+    backendRefs:
+    - name: kiali
+      port: 20001
+
+  #jaeger
+  - matches:
+    - headers:
+      - type: Exact
+        name: sooeon
+        value: zzang
+      path:
+        type: PathPrefix
+        value: /jaeger
+    backendRefs:
+    - name: tracing
+      port: 80
+
+
+
+

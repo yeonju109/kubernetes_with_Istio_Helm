@@ -1,0 +1,77 @@
+{{ if .Values.monitoring.canary.use }}
+# rating
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rating-canary
+spec:
+  selector:
+    matchLabels:
+      version: canary
+  replicas: 1
+  template: 
+    metadata:
+      labels:
+        app: rating
+        version: canary
+    spec:
+      containers:
+      - name: rating-container
+        image: tmdwn0704/rating-service:canary2
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 8081
+        envFrom: 
+        - configMapRef:
+            name: service-url
+        - configMapRef:
+            name: app-db-setting
+        
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8081
+          initialDelaySeconds: 80
+          periodSeconds: 10
+          
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8081
+          initialDelaySeconds: 80
+          periodSeconds: 10
+---
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rating-canary-virtual-service
+  namespace: default
+spec:
+  hosts:
+    - rating-service.default.svc.cluster.local  
+  http:
+    - route:
+        - destination:
+            host: rating-service.default.svc.cluster.local
+            subset: original  
+          weight: 90
+        - destination:
+            host: rating-service.default.svc.cluster.local
+            subset: canary  
+          weight: 10
+---
+kind: DestinationRule        
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rating-canary-destination-rule
+  namespace: default
+spec:
+  host: rating-service.default.svc.cluster.local 
+  subsets:
+    - labels:   
+        version: original
+      name: original
+    - labels:
+        version: canary
+      name: canary
+{{ end }}
